@@ -13,23 +13,33 @@ print(df.head())
 print('Missing values in each column:')
 print(df.isnull().sum())
 
+
 # --- CLEANING START ---
+
+df['Salary'] = df['Salary'].astype(str).str.replace(',', '', regex=True)
+
 df['Salary'] = pd.to_numeric(df['Salary'], errors='coerce')
 df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
 
 
-df['Salary'] = df['Salary'].fillna(df['Salary'].mean())
-df['Age'] = df['Age'].fillna(df['Age'].mean())
+df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-# 3. Infinity handle---
-df = df.replace([np.inf, -np.inf], np.nan)
-                
-df = df.fillna(0) 
+#  NaN values  (Fillna)
+salary_mean = df['Salary'].mean()
+age_mean = df['Age'].mean()
+
+df['Salary'] = df['Salary'].fillna(salary_mean)
+df['Age'] = df['Age'].fillna(age_mean)
+
+df['Contact'] = df['Contact'].fillna(0)
+df['City'] = df['City'].fillna('Unknown')
 
 # --- CLEANING END ---
 
-print("\nAfter cleaning, missing values:")
+# Result check-----
+print("Missing values after cleaning:")
 print(df.isnull().sum())
 
-df.to_csv('cleaned_indian_employee_Data.csv', index=False)
-print('\nData cleaning completed! Saved successfully.')
+# Final file save----
+df.to_csv('cleaned_employee_data.csv', index=False)
+print("\nSuccess! Data clean ho gaya aur 'cleaned_employee_data.csv' save ho gayi.")
